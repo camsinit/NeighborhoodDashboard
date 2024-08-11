@@ -2,7 +2,8 @@
 import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { ReactNode, useEffect } from 'react'
+import { useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { Configuration } from '../../configuration'
 import { Api } from '../../trpc'
 
@@ -10,7 +11,7 @@ const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
 })
 
-export function AnalyticsProvider({ children }: { children: ReactNode }) {
+export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = Api.configuration.getPublic.useQuery()
 
   useEffect(() => {
