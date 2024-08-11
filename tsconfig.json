@@ -39,7 +39,7 @@
     "strictBindCallApply": false,
     "types": [
       "@types/mapbox__mapbox-sdk",
-      "react",
+      "./node_modules/@types/react",
       "node"
     ],
     "forceConsistentCasingInFileNames": true
