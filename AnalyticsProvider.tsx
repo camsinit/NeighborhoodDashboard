@@ -1,38 +1,54 @@
-'use client' // This directive is necessary for using hooks in a Next.js app
-import React, { useEffect, type ReactNode } from 'react'
-import posthog, { PostHog } from 'posthog-js'
+'use client'
+
+import React, { useState, useEffect, type ReactNode } from 'react'
 import { Api } from './trpc.client.js'
+
+type PostHogType = typeof import('posthog-js').default
 
 export function AnalyticsProvider({ children }: { children: ReactNode }) {
   const { data, isLoading } = (Api as any).configuration?.getPublic?.useQuery?.() ?? { data: undefined, isLoading: false }
+  const [posthogClient, setPosthogClient] = useState<PostHogType | null>(null)
 
   useEffect(() => {
     const isProduction = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
-    const canActivate =
-      typeof window !== 'undefined' && !isLoading && data && isProduction
+    const canActivate = !isLoading && data && isProduction
 
-    if (canActivate) {
-      const key = data['PUBLIC_POSTHOG_KEY']
-      const host = data['PUBLIC_POSTHOG_HOST']
+    if (canActivate && typeof window !== 'undefined') {
+      const key = process.env.NEXT_PUBLIC_POSTHOG_KEY || data?.['PUBLIC_POSTHOG_KEY']
+      const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || data?.['PUBLIC_POSTHOG_HOST']
 
-      try {
-        posthog.init(key, {
-          api_host: host,
-          person_profiles: 'identified_only',
-          capture_pageview: true, // Changed to true to capture pageviews automatically
+      if (key && host) {
+        import('posthog-js').then((PostHog) => {
+          try {
+            PostHog.default.init(key, {
+              api_host: host,
+              capture_pageview: false,
+            })
+            setPosthogClient(PostHog.default)
+          } catch (error) {
+            console.error(`Could not start analytics: ${(error as Error).message}`)
+          }
+        }).catch(error => {
+          console.error(`Failed to import PostHog: ${error.message}`)
         })
-      } catch (error) {
-        console.log(`Could not start analytics: ${(error as Error).message}`)
       }
     }
   }, [data, isLoading])
 
-  // Capture pageview on route change
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      posthog.capture('$pageview')
+    if (posthogClient && typeof window !== 'undefined') {
+      const handleRouteChange = () => {
+        posthogClient.capture('$pageview')
+      };
+
+      handleRouteChange(); // Capture initial pageview
+      window.addEventListener('popstate', handleRouteChange);
+
+      return () => {
+        window.removeEventListener('popstate', handleRouteChange);
+      };
     }
-  }, [])
+  }, [posthogClient]);
 
   return <>{children}</>
 }
