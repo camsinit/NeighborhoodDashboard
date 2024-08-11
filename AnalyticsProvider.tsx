@@ -1,9 +1,20 @@
 'use client' // This directive is necessary for using hooks in a Next.js app
 import React, { useEffect, type ReactNode } from 'react'
 import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
 import { Api } from './trpc.client.js'
 import PostHogPageView from './PostHogPageView.js'
+
+// Declare the module to satisfy TypeScript
+declare module 'posthog-js/react' {
+  interface PostHogProviderProps {
+    client: typeof posthog;
+    children: React.ReactNode;
+  }
+  export default function PostHogProvider(props: PostHogProviderProps): JSX.Element;
+}
+
+// Dynamic import to avoid SSR issues
+const PostHogProvider = React.lazy(() => import('posthog-js/react'));
 
 export function AnalyticsProvider({ children }: { children: ReactNode }) {
   const { data, isLoading } = (Api as any).configuration?.getPublic?.useQuery?.() ?? { data: undefined, isLoading: false }
@@ -30,9 +41,11 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   }, [data, isLoading])
 
   return (
-    <PostHogProvider client={posthog}>
-      <PostHogPageView />
-      {children}
-    </PostHogProvider>
+    <React.Suspense fallback={<>{children}</>}>
+      <PostHogProvider client={posthog}>
+        <PostHogPageView />
+        {children}
+      </PostHogProvider>
+    </React.Suspense>
   )
 }
