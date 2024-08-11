@@ -31,7 +31,7 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "types": ["@types/mapbox__mapbox-sdk"]
+    "types": ["@types/mapbox__mapbox-sdk", "react"]
   },
   "include": [
     "next-env.d.ts",
