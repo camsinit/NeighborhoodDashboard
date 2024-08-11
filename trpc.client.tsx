@@ -1,34 +1,33 @@
-import { createTRPCReact } from '@/.marblism/api/client/react'
-import { Configuration } from '@/core/configuration'
-import { AppRouter } from '@/server'
+import { createTRPCReact } from '@trpc/react-query';
 import { loggerLink, unstable_httpBatchStreamLink } from '@trpc/client'
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 import superjson from 'superjson'
+import type { AppRouter } from '../server/api/root';
 
-export const Api = createTRPCReact<AppRouter>()
+export const Api = createTRPCReact<AppRouter>();
 
 const transformer = superjson
 
 export const createTrpcClient = () => {
-  return Api.createClient({
+  return {
     transformer,
     links: [
       loggerLink({
-        enabled: op =>
-          Configuration.isDevelopment() ||
+        enabled: (op) =>
+          process.env.NEXT_PUBLIC_NODE_ENV === 'development' ||
           (op.direction === 'down' && op.result instanceof Error),
       }),
       unstable_httpBatchStreamLink({
-        url: Configuration.getBaseUrl() + '/api/trpc',
-        headers: options => {
-          const headers = new Headers()
-          headers.set('x-trpc-source', 'react')
-          return Object.fromEntries(headers.entries())
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/trpc`,
+        headers: () => {
+          const headers = new Headers();
+          headers.set('x-trpc-source', 'react');
+          return Object.fromEntries(headers.entries());
         },
       }),
     ],
-  })
-}
+  };
+};
 
 /**
  * Inference helper for inputs.

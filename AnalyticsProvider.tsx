@@ -1,29 +1,19 @@
-'use client'
+'use client' // This directive is necessary for using hooks in a Next.js app
 import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import * as React from 'react'
-import { ConfigurationRouter } from './configuration.router'
-import { Api } from './trpc'
-
-// Add type definitions for process.env
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      NODE_ENV: 'development' | 'production' | 'test'
-    }
-  }
-}
+import { useEffect } from 'react'
+import { Api } from './trpc.client'
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
 })
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
-  const { data, isLoading } = Api.configuration.getPublic.useQuery()
+  const { data, isLoading } = (Api as any).configuration?.getPublic?.useQuery?.() ?? { data: undefined, isLoading: false }
 
-  React.useEffect(() => {
-    const isProduction = process.env.NODE_ENV === 'production'
+  useEffect(() => {
+    const isProduction = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
     const canActivate =
       typeof window !== 'undefined' && !isLoading && data && isProduction
 
