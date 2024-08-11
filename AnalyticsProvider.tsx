@@ -1,9 +1,9 @@
 'use client' // This directive is necessary for using hooks in a Next.js app
+import React from 'react'
+import { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { useEffect } from 'react'
-// TODO: Investigate why React and useEffect imports are not recognized
 import { Api } from './trpc.client'
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
