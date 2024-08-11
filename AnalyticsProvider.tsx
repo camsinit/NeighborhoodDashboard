@@ -1,5 +1,5 @@
 'use client' // This directive is necessary for using hooks in a Next.js app
-import { useEffect, type ReactNode } from 'react'
+import React, { useEffect, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'

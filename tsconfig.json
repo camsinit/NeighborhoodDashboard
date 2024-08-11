@@ -31,7 +31,7 @@
         "./src/*"
       ]
     },
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "skipLibCheck": true,
     "strict": false,
     "strictNullChecks": false,
@@ -39,7 +39,8 @@
     "strictBindCallApply": false,
     "types": [
       "@types/mapbox__mapbox-sdk",
-      "node"
+      "node",
+      "react"
     ],
     "forceConsistentCasingInFileNames": true
   },

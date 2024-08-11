@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { type RouterFactory, type ProcBuilder, type BaseConfig, db } from ".";
+import { type RouterFactory, type ProcBuilder, type BaseConfig, db } from "./index.js";
 import { AccountInputSchema } from '@zenstackhq/runtime/zod/input';
-import { checkRead, checkMutate } from './helper';
+import { checkRead, checkMutate } from './helper.js';
 import type { Prisma } from '@prisma/client';
 import type { UseTRPCMutationOptions, UseTRPCMutationResult, UseTRPCQueryOptions, UseTRPCQueryResult, UseTRPCInfiniteQueryOptions, UseTRPCInfiniteQueryResult } from '@trpc/react-query/shared';
 import type { TRPCClientErrorLike } from '@trpc/client';
