@@ -2,10 +2,18 @@
 import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { useEffect } from 'react'
-import type { ReactNode } from 'react'
-import { Configuration } from '../../configuration'
-import { Api } from '../../trpc'
+import * as React from 'react'
+import { ConfigurationRouter } from './configuration.router'
+import { Api } from './trpc'
+
+// Add type definitions for process.env
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production' | 'test'
+    }
+  }
+}
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
@@ -14,8 +22,8 @@ const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = Api.configuration.getPublic.useQuery()
 
-  useEffect(() => {
-    const isProduction = Configuration.isProduction()
+  React.useEffect(() => {
+    const isProduction = process.env.NODE_ENV === 'production'
     const canActivate =
       typeof window !== 'undefined' && !isLoading && data && isProduction
 
@@ -30,7 +38,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
           capture_pageview: false,
         })
       } catch (error) {
-        console.log(`Could not start analytics: ${error.message}`)
+        console.log(`Could not start analytics: ${(error as Error).message}`)
       }
     }
   }, [data, isLoading])
