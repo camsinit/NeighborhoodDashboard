@@ -1,0 +1,44 @@
+import "./account.zmodel";
+import "./session.zmodel";
+import "./role.zmodel";
+
+import './event.zmodel'
+
+import './group.zmodel'
+
+import './offering.zmodel'
+
+import './emergencyInfo.zmodel'
+
+import './needWant.zmodel'
+
+import './interest.zmodel'
+
+import './response.zmodel'
+
+model User {
+    id               String    @id @default(uuid())
+    name             String?
+    email            String?   @unique
+    pictureUrl       String?
+    stripeCustomerId String?
+    password         String?   @password @omit
+    dateCreated      DateTime  @default(now())
+    dateUpdated      DateTime  @updatedAt @default(now())
+    accounts         Account[]
+    sessions         Session[]
+    roles            Role[]
+
+eventsAsCreatedBy Event[]   @relation("createdBy")  
+        groupsAsCreatedBy Group[]   @relation("createdBy")  
+        offeringsAsCreatedBy Offering[] @relation("createdBy")  
+        emergencyInfos EmergencyInfo[] @relation("user")  
+        needWants NeedWant[] @relation("user")  
+        interests Interest[] @relation("user")  
+        responses Response[] @relation("user")  
+
+@@auth()
+    @@allow("all", auth().id == this.id)
+    @@allow('all', auth().roles?[name == 'admin'])
+    @@allow("create", true)
+}
