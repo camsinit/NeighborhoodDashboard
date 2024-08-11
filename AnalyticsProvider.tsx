@@ -1,13 +1,9 @@
 'use client' // This directive is necessary for using hooks in a Next.js app
 import React, { useEffect, type ReactNode } from 'react'
-import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { Api } from './trpc.client'
-
-const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
-  ssr: false,
-})
+import { Api } from './trpc.client.js'
+import PostHogPageView from './PostHogPageView.js'
 
 export function AnalyticsProvider({ children }: { children: ReactNode }) {
   const { data, isLoading } = (Api as any).configuration?.getPublic?.useQuery?.() ?? { data: undefined, isLoading: false }
