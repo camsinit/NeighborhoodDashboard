@@ -3,8 +3,8 @@ import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
+// TODO: Investigate why React and useEffect imports are not recognized
 import { Api } from './trpc.client'
-import type { ProcessEnv } from 'node'
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
