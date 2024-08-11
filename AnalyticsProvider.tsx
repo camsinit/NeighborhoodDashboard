@@ -1,6 +1,6 @@
 'use client' // This directive is necessary for using hooks in a Next.js app
 import React, { useEffect, type ReactNode } from 'react'
-import posthog from 'posthog-js'
+import posthog, { PostHog } from 'posthog-js'
 import { Api } from './trpc.client.js'
 
 export function AnalyticsProvider({ children }: { children: ReactNode }) {
