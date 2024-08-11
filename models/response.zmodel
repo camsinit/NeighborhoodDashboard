@@ -1,0 +1,17 @@
+
+ import "./user.zmodel"  
+ import "./event.zmodel"  
+
+model Response {
+
+    id        String    @id @default(uuid())  
+    responseText String?      
+    userId    String?      
+    user      User?      @relation(fields: [userId], references: [id], name:"user")  
+    eventId   String?      
+    event     Event?     @relation(fields: [eventId], references: [id], name:"event")  
+
+dateCreated DateTime @default(now())
+      dateUpdated DateTime @updatedAt  @default(now())
+      @@allow("all", true)
+}
