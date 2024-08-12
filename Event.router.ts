@@ -12,16 +12,16 @@ const EventInputSchema = z.object({
   description: z.string().optional(),
   date: z.string().optional(),
   location: z.string().optional(),
-  createdById: z.string().optional(),
+  createdById: z.string().nullable(),
   dateCreated: z.date().optional().default(() => new Date()),
   dateUpdated: z.date().optional().default(() => new Date()),
 });
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
-        createMany: procedure.input(z.object({ data: z.array(EventInputSchema) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data.map(event => ({ ...event, name: event.name })) }))),
+        createMany: procedure.input(z.object({ data: z.array(EventInputSchema) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data }))),
 
-        create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: { ...input, createdById: input.createdById === undefined ? null : input.createdById } }))),
+        create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: input }))),
 
         deleteMany: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.deleteMany(input))),
 
