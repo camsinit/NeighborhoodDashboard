@@ -19,7 +19,7 @@ const EventInputSchema = z.object({
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
-        createMany: procedure.input(z.object({ data: z.array(EventInputSchema.omit({ id: true })) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data }))),
+        createMany: procedure.input(z.object({ data: z.array(EventInputSchema.omit({ id: true, createdById: true, dateCreated: true, dateUpdated: true })) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data }))),
 
         create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: input }))),
 
