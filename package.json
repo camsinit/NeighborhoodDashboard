@@ -6,7 +6,7 @@
   "scripts": {
     "init": "pnpm install && pnpm run docker:init ; pnpm run env:init ; pnpm run global:sync ; pnpm run database:seed",
     "dev": "pnpm run global:sync && next dev -p 8099",
-    "build": "pnpm run crud:sync && next build",
+    "build": "pnpm run crud:sync && tsc --traceResolution && next build",
     "start": "next start -p 8099",
     "lint": "next lint",
     "check": "tsc",
@@ -95,6 +95,6 @@
     "initVersion": "7.34.0"
   },
   "zenstack": {
-    "schema": "./models/schema.zmodel"
+    "schema": "./schema.zmodel"
   }
 }

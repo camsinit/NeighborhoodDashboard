@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Base Options: */
     "esModuleInterop": true,
-    "target": "ES2016",
+    "target": "ES2022",
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
@@ -12,8 +12,9 @@
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
-    "module": "commonjs",
+    "module": "esnext",
     "jsx": "preserve",
+    "jsxImportSource": "react",
     "plugins": [
       {
         "name": "next"
@@ -23,15 +24,26 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/core/*": ["./src/core/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/helpers/*": ["./src/helpers/*"],
+      "@/models/*": ["./src/models/*"],
+      "@/trpc/*": ["./src/trpc/*"]
     },
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "strict": false,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "types": ["@types/mapbox__mapbox-sdk"]
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["@types/mapbox__mapbox-sdk", "node", "react", "next"],
+    "useDefineForClassFields": true
   },
   "include": [
     "next-env.d.ts",
@@ -39,7 +51,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "node_modules/posthog-js/dist/module.d.ts"
   ],
   "exclude": ["node_modules"]
 }
