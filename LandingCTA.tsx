@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
-import LandingButton from './LandingButton'
+import { DesignSystemUtility } from '../helpers/utility.js'
+import LandingButton from './LandingButton.js'
 
 interface Props extends HTMLAttributes<HTMLElement> {
   title?: string
