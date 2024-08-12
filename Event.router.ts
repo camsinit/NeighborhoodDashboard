@@ -21,7 +21,7 @@ export default function createRouter<Config extends BaseConfig>(router: RouterFa
     return router({
         createMany: procedure.input(z.object({ data: z.array(EventInputSchema) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data.map(event => ({ ...event, name: event.name })) }))),
 
-        create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: { ...input, createdById: input.createdById || null } }))),
+        create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: { ...input, createdById: input.createdById === undefined ? null : input.createdById } }))),
 
         deleteMany: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.deleteMany(input))),
 
