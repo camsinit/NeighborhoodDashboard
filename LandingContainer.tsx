@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
 import { LandingFooter } from './LandingFooter'
-import { LandingNavBar } from './LandingNavBar/landing.navbar'
+import { LandingNavBar } from './landing.navbar'
 
 interface Props extends HTMLAttributes<HTMLElement> {
   navItems: {
