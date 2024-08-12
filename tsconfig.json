@@ -50,7 +50,8 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "node_modules/posthog-js/dist/module.d.ts"
   ],
   "exclude": [
     "node_modules"
