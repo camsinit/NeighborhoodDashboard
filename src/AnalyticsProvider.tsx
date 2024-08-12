@@ -3,8 +3,8 @@ import dynamic from 'next/dynamic'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { ReactNode, useEffect } from 'react'
-import { Configuration } from 'configuration'
-import { Api } from 'trpc'
+import { Configuration } from '@/core/configuration'
+import { Api } from '@/trpc/client'
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), {
   ssr: false,
