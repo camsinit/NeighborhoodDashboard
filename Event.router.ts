@@ -39,9 +39,9 @@ export default function createRouter<Config extends BaseConfig>(router: RouterFa
 
         findMany: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).event.findMany(input))),
 
-        findUnique: procedure.input(z.object({ where: z.object({ id: z.string() }), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).event.findUnique(input))),
+        findUnique: procedure.input(z.object({ where: z.object({ id: z.string() }), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).event.findUnique({ where: { id: input.where.id }, select: input.select, include: input.include }))),
 
-        updateMany: procedure.input(z.object({ where: z.any(), data: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.updateMany(input))),
+        updateMany: procedure.input(z.object({ where: z.any(), data: z.object({}).refine(obj => Object.keys(obj).length > 0, { message: "Data object cannot be empty" }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.updateMany(input))),
 
         update: procedure.input(z.object({ where: z.any(), data: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.update(input))),
     });
