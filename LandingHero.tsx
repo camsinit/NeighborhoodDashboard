@@ -1,14 +1,17 @@
-import { HTMLAttributes, ReactNode } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
-import LandingButton from './LandingButton'
+import { HTMLAttributes } from 'react';
+import { DesignSystemUtility } from './utility';
+import LandingButton from './LandingButton';
+
+type ReactNode = React.ReactNode;
 
 interface Props extends HTMLAttributes<HTMLElement> {
-  title: string
-  subtitle: string
-  buttonText: string
-  buttonLink: string
-  pictureUrl?: string
-  socialProof?: ReactNode
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  pictureUrl?: string;
+  socialProof?: ReactNode;
+  className?: string;
 }
 
 export const LandingHero: React.FC<Props> = ({
@@ -37,8 +40,7 @@ export const LandingHero: React.FC<Props> = ({
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <LandingButton
               href={buttonLink || '/register'}
-              className="flex gap-1 items-center justify-center "
-              rel="noopener"
+              className="flex gap-1 items-center justify-center"
               size="lg"
             >
               {buttonText}
@@ -51,9 +53,10 @@ export const LandingHero: React.FC<Props> = ({
           <img
             src={pictureUrl}
             className="mask-stripes object-cover w-full h-full"
+            alt="Hero"
           />
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
