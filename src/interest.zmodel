@@ -1,0 +1,14 @@
+
+ import "./user.zmodel"  
+
+model Interest {
+
+    id        String    @id @default(uuid())  
+    description String      
+    userId    String?      
+    user      User?      @relation(fields: [userId], references: [id], name:"user")  
+
+dateCreated DateTime @default(now())
+      dateUpdated DateTime @updatedAt  @default(now())
+      @@allow("all", true)
+}
