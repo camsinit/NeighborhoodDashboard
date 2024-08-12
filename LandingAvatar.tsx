@@ -3,6 +3,10 @@ import { ImgHTMLAttributes } from 'react'
 
 interface LandingAvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
   size?: 'small' | 'medium' | 'large'
+  className?: string
+  src?: string
+  width?: number
+  height?: number
 }
 
 /**
