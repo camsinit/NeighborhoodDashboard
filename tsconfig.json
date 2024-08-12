@@ -31,7 +31,7 @@
         "./src/*"
       ]
     },
-    "moduleResolution": "node16",
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
