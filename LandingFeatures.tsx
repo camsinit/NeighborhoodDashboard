@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from './utility'
 
 type FeatureType = {
   heading: string
@@ -11,6 +11,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle: string
   features: FeatureType[]
+  className?: string
 }
 
 export const LandingFeatures: React.FC<Props> = ({
