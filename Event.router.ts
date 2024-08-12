@@ -8,18 +8,20 @@ import type { AnyRouter } from '@trpc/server';
 
 const EventInputSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1).nonempty(),
+  name: z.string().min(1),
   description: z.string().optional(),
   date: z.string().optional(),
   location: z.string().optional(),
-  createdById: z.string().nullable(),
-  dateCreated: z.date().optional().default(() => new Date()),
-  dateUpdated: z.date().optional().default(() => new Date()),
+  createdById: z.string().optional(),
+  dateCreated: z.date().optional(),
+  dateUpdated: z.date().optional(),
 });
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
-        createMany: procedure.input(z.object({ data: z.array(EventInputSchema.omit({ id: true, createdById: true, dateCreated: true, dateUpdated: true }).required({ name: true })) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data }))),
+        createMany: procedure.input(z.object({
+            data: z.array(EventInputSchema.omit({ id: true, dateCreated: true, dateUpdated: true }))
+        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.createMany({ data: input.data }))),
 
         create: procedure.input(EventInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.create({ data: input }))),
 
