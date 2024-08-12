@@ -43,7 +43,10 @@ export default function createRouter<Config extends BaseConfig>(router: RouterFa
 
         updateMany: procedure.input(z.object({ where: z.any(), data: z.object({}).refine(obj => Object.keys(obj).length > 0, { message: "Data object cannot be empty" }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.updateMany(input))),
 
-        update: procedure.input(z.object({ where: z.any(), data: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.update(input))),
+        update: procedure.input(z.object({
+            where: z.object({ id: z.string() }),
+            data: EventInputSchema.partial().omit({ id: true })
+        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.update(input))),
     });
 }
 
