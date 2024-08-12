@@ -5,16 +5,14 @@ import { checkRead, checkMutate } from './helper.js';
 import type { UseTRPCMutationOptions, UseTRPCMutationResult, UseTRPCQueryOptions, UseTRPCQueryResult, UseTRPCInfiniteQueryOptions, UseTRPCInfiniteQueryResult } from '@trpc/react-query/shared';
 import type { TRPCClientErrorLike } from '@trpc/client';
 import type { AnyRouter } from '@trpc/server';
-import type { PrismaClient } from '@prisma/client';
 
 const EventInputSchema = z.object({
-  // Define your Event schema here based on your Prisma model
-  // For example:
   id: z.string().optional(),
-  title: z.string(),
-  description: z.string(),
-  date: z.date(),
-  // Add other fields as necessary
+  name: z.string(),
+  description: z.string().optional(),
+  date: z.string().optional(),
+  location: z.string().optional(),
+  createdById: z.string().optional(),
 });
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
