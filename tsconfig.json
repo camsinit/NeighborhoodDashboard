@@ -32,7 +32,9 @@
       "@/lib/*": ["src/lib/*"],
       "@/helpers/*": ["src/helpers/*"],
       "@/models/*": ["src/models/*"],
-      "@/trpc/*": ["src/trpc/*"]
+      "@/trpc/*": ["src/trpc/*"],
+      "configuration": ["src/configuration"],
+      "trpc": ["src/trpc"]
     },
     "moduleResolution": "node",
     "skipLibCheck": true,
