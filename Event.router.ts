@@ -8,7 +8,7 @@ import type { AnyRouter } from '@trpc/server';
 
 const EventInputSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1),
+  name: z.string().min(1).nonempty(),
   description: z.string().optional(),
   date: z.string().optional(),
   location: z.string().optional(),
