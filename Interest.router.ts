@@ -1,175 +1,152 @@
 /* eslint-disable */
-import { type RouterFactory, type ProcBuilder, type BaseConfig, db } from ".";
-import * as _Schema from '@zenstackhq/runtime/zod/input';
-const $Schema: typeof _Schema = (_Schema as any).default ?? _Schema;
-import { checkRead, checkMutate } from '../helper';
-import type { Prisma } from '@prisma/client';
+import { type RouterFactory, type ProcBuilder, type BaseConfig, db } from "./index.js";
+import { z } from 'zod';
+import { checkRead, checkMutate } from './helper.js';
 import type { UseTRPCMutationOptions, UseTRPCMutationResult, UseTRPCQueryOptions, UseTRPCQueryResult, UseTRPCInfiniteQueryOptions, UseTRPCInfiniteQueryResult } from '@trpc/react-query/shared';
 import type { TRPCClientErrorLike } from '@trpc/client';
 import type { AnyRouter } from '@trpc/server';
 
+const InterestInputSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  createdById: z.string().optional(),
+  dateCreated: z.date().optional(),
+  dateUpdated: z.date().optional(),
+});
+
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
+        createMany: procedure.input(z.object({
+            data: z.array(z.object({
+                name: z.string().min(1),
+                description: z.string().optional(),
+                createdById: z.string().optional(),
+            }))
+        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.createMany({ data: input.data }))),
 
-        createMany: procedure.input($Schema.InterestInputSchema.createMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.createMany(input as any))),
+        create: procedure.input(InterestInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.create({ data: input }))),
 
-        create: procedure.input($Schema.InterestInputSchema.create).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.create(input as any))),
+        deleteMany: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.deleteMany(input))),
 
-        deleteMany: procedure.input($Schema.InterestInputSchema.deleteMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.deleteMany(input as any))),
+        delete: procedure.input(z.object({ where: z.object({ id: z.string() }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.delete(input))),
 
-        delete: procedure.input($Schema.InterestInputSchema.delete).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.delete(input as any))),
+        findFirst: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).interest.findFirst(input))),
 
-        findFirst: procedure.input($Schema.InterestInputSchema.findFirst).query(({ ctx, input }) => checkRead(db(ctx).interest.findFirst(input as any))),
+        findMany: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).interest.findMany(input))),
 
-        findMany: procedure.input($Schema.InterestInputSchema.findMany).query(({ ctx, input }) => checkRead(db(ctx).interest.findMany(input as any))),
+        findUnique: procedure.input(z.object({ where: z.object({ id: z.string() }), select: z.record(z.boolean()).optional(), include: z.record(z.boolean()).optional() })).query(({ ctx, input }) => checkRead(db(ctx).interest.findUnique({ where: { id: input.where.id }, ...(input.select && { select: input.select }), ...(input.include && { include: input.include }) }))),
 
-        findUnique: procedure.input($Schema.InterestInputSchema.findUnique).query(({ ctx, input }) => checkRead(db(ctx).interest.findUnique(input as any))),
+        updateMany: procedure.input(z.object({ where: z.any(), data: z.object({}).refine(obj => Object.keys(obj).length > 0, { message: "Data object cannot be empty" }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.updateMany(input))),
 
-        updateMany: procedure.input($Schema.InterestInputSchema.updateMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.updateMany(input as any))),
-
-        update: procedure.input($Schema.InterestInputSchema.update).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.update(input as any))),
-
-    }
-    );
+        update: procedure.input(z.object({
+            where: z.object({ id: z.string() }),
+            data: InterestInputSchema.partial().omit({ id: true })
+        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.update(input))),
+    });
 }
 
 export interface ClientType<AppRouter extends AnyRouter, Context = AppRouter['_def']['_config']['$types']['ctx']> {
     createMany: {
-
-        useMutation: <T extends Prisma.InterestCreateManyArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestCreateManyArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.BatchPayload,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.BatchPayload, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestCreateManyArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestCreateManyArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.BatchPayload, Context>) => Promise<Prisma.BatchPayload>
-            };
-
+        useMutation: <T extends z.infer<typeof InterestInputSchema>[]>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                { count: number },
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<{ count: number }, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, { count: number }, Context>) => Promise<{ count: number }>
+        };
     };
     create: {
-
-        useMutation: <T extends Prisma.InterestCreateArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestCreateArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.InterestGetPayload<T>,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.InterestGetPayload<T>, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestCreateArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestCreateArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.InterestGetPayload<T>, Context>) => Promise<Prisma.InterestGetPayload<T>>
-            };
-
+        useMutation: <T extends z.infer<typeof InterestInputSchema>>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                T,
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<T, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, T, Context>) => Promise<T>
+        };
     };
     deleteMany: {
-
-        useMutation: <T extends Prisma.InterestDeleteManyArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestDeleteManyArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.BatchPayload,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.BatchPayload, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestDeleteManyArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestDeleteManyArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.BatchPayload, Context>) => Promise<Prisma.BatchPayload>
-            };
-
+        useMutation: <T extends { where: z.infer<typeof InterestInputSchema> }>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                { count: number },
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<{ count: number }, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, { count: number }, Context>) => Promise<{ count: number }>
+        };
     };
     delete: {
-
-        useMutation: <T extends Prisma.InterestDeleteArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestDeleteArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.InterestGetPayload<T>,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.InterestGetPayload<T>, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestDeleteArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestDeleteArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.InterestGetPayload<T>, Context>) => Promise<Prisma.InterestGetPayload<T>>
-            };
-
+        useMutation: <T extends { where: z.infer<typeof InterestInputSchema> }>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                T,
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<T, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, T, Context>) => Promise<T>
+        };
     };
     findFirst: {
-
-        useQuery: <T extends Prisma.InterestFindFirstArgs, TData = Prisma.InterestGetPayload<T>>(
-            input: Prisma.SelectSubset<T, Prisma.InterestFindFirstArgs>,
-            opts?: UseTRPCQueryOptions<string, T, Prisma.InterestGetPayload<T>, TData, Error>
-        ) => UseTRPCQueryResult<
-            TData,
-            TRPCClientErrorLike<AppRouter>
-        >;
-        useInfiniteQuery: <T extends Prisma.InterestFindFirstArgs>(
-            input: Omit<Prisma.SelectSubset<T, Prisma.InterestFindFirstArgs>, 'cursor'>,
-            opts?: UseTRPCInfiniteQueryOptions<string, T, Prisma.InterestGetPayload<T>, Error>
-        ) => UseTRPCInfiniteQueryResult<
-            Prisma.InterestGetPayload<T>,
-            TRPCClientErrorLike<AppRouter>
-        >;
-
+        useQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCQueryOptions<string, { where: T }, T, T, Error>
+        ) => UseTRPCQueryResult<T, TRPCClientErrorLike<AppRouter>>;
+        useInfiniteQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCInfiniteQueryOptions<string, { where: T }, T, Error>
+        ) => UseTRPCInfiniteQueryResult<T, TRPCClientErrorLike<AppRouter>>;
     };
     findMany: {
-
-        useQuery: <T extends Prisma.InterestFindManyArgs, TData = Array<Prisma.InterestGetPayload<T>>>(
-            input: Prisma.SelectSubset<T, Prisma.InterestFindManyArgs>,
-            opts?: UseTRPCQueryOptions<string, T, Array<Prisma.InterestGetPayload<T>>, TData, Error>
-        ) => UseTRPCQueryResult<
-            TData,
-            TRPCClientErrorLike<AppRouter>
-        >;
-        useInfiniteQuery: <T extends Prisma.InterestFindManyArgs>(
-            input: Omit<Prisma.SelectSubset<T, Prisma.InterestFindManyArgs>, 'cursor'>,
-            opts?: UseTRPCInfiniteQueryOptions<string, T, Array<Prisma.InterestGetPayload<T>>, Error>
-        ) => UseTRPCInfiniteQueryResult<
-            Array<Prisma.InterestGetPayload<T>>,
-            TRPCClientErrorLike<AppRouter>
-        >;
-
+        useQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCQueryOptions<string, { where: T }, T[], T[], Error>
+        ) => UseTRPCQueryResult<T[], TRPCClientErrorLike<AppRouter>>;
+        useInfiniteQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCInfiniteQueryOptions<string, { where: T }, T[], Error>
+        ) => UseTRPCInfiniteQueryResult<T[], TRPCClientErrorLike<AppRouter>>;
     };
     findUnique: {
-
-        useQuery: <T extends Prisma.InterestFindUniqueArgs, TData = Prisma.InterestGetPayload<T>>(
-            input: Prisma.SelectSubset<T, Prisma.InterestFindUniqueArgs>,
-            opts?: UseTRPCQueryOptions<string, T, Prisma.InterestGetPayload<T>, TData, Error>
-        ) => UseTRPCQueryResult<
-            TData,
-            TRPCClientErrorLike<AppRouter>
-        >;
-        useInfiniteQuery: <T extends Prisma.InterestFindUniqueArgs>(
-            input: Omit<Prisma.SelectSubset<T, Prisma.InterestFindUniqueArgs>, 'cursor'>,
-            opts?: UseTRPCInfiniteQueryOptions<string, T, Prisma.InterestGetPayload<T>, Error>
-        ) => UseTRPCInfiniteQueryResult<
-            Prisma.InterestGetPayload<T>,
-            TRPCClientErrorLike<AppRouter>
-        >;
-
+        useQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCQueryOptions<string, { where: T }, T, T, Error>
+        ) => UseTRPCQueryResult<T, TRPCClientErrorLike<AppRouter>>;
+        useInfiniteQuery: <T extends z.infer<typeof InterestInputSchema>>(
+            input: { where: T },
+            opts?: UseTRPCInfiniteQueryOptions<string, { where: T }, T, Error>
+        ) => UseTRPCInfiniteQueryResult<T, TRPCClientErrorLike<AppRouter>>;
     };
     updateMany: {
-
-        useMutation: <T extends Prisma.InterestUpdateManyArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestUpdateManyArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.BatchPayload,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.BatchPayload, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestUpdateManyArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestUpdateManyArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.BatchPayload, Context>) => Promise<Prisma.BatchPayload>
-            };
-
+        useMutation: <T extends { where: z.infer<typeof InterestInputSchema>; data: z.infer<typeof InterestInputSchema> }>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                { count: number },
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<{ count: number }, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, { count: number }, Context>) => Promise<{ count: number }>
+        };
     };
     update: {
-
-        useMutation: <T extends Prisma.InterestUpdateArgs>(opts?: UseTRPCMutationOptions<
-            Prisma.InterestUpdateArgs,
-            TRPCClientErrorLike<AppRouter>,
-            Prisma.InterestGetPayload<T>,
-            Context
-        >,) =>
-            Omit<UseTRPCMutationResult<Prisma.InterestGetPayload<T>, TRPCClientErrorLike<AppRouter>, Prisma.SelectSubset<T, Prisma.InterestUpdateArgs>, Context>, 'mutateAsync'> & {
-                mutateAsync:
-                <T extends Prisma.InterestUpdateArgs>(variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, Prisma.InterestGetPayload<T>, Context>) => Promise<Prisma.InterestGetPayload<T>>
-            };
-
+        useMutation: <T extends { where: z.infer<typeof InterestInputSchema>; data: z.infer<typeof InterestInputSchema> }>(
+            opts?: UseTRPCMutationOptions<
+                T,
+                TRPCClientErrorLike<AppRouter>,
+                T,
+                Context
+            >
+        ) => Omit<UseTRPCMutationResult<T, TRPCClientErrorLike<AppRouter>, T, Context>, 'mutateAsync'> & {
+            mutateAsync: (variables: T, opts?: UseTRPCMutationOptions<T, TRPCClientErrorLike<AppRouter>, T, Context>) => Promise<T>
+        };
     };
 }
