@@ -24,15 +24,15 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@/core/*": ["core/*"],
-      "@/components/*": ["components/*"],
-      "@/pages/*": ["pages/*"],
-      "@/styles/*": ["styles/*"],
-      "@/lib/*": ["lib/*"],
-      "@/helpers/*": ["helpers/*"],
-      "@/models/*": ["models/*"],
-      "@/trpc/*": ["trpc/*"]
+      "@/*": ["src/*"],
+      "@/core/*": ["src/core/*"],
+      "@/components/*": ["src/components/*"],
+      "@/pages/*": ["src/pages/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/helpers/*": ["src/helpers/*"],
+      "@/models/*": ["src/models/*"],
+      "@/trpc/*": ["src/trpc/*"]
     },
     "moduleResolution": "node",
     "skipLibCheck": true,
