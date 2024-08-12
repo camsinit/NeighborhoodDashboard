@@ -1,36 +1,43 @@
 /* eslint-disable */
 import { type RouterFactory, type ProcBuilder, type BaseConfig, db } from ".";
-import * as _Schema from '@zenstackhq/runtime/zod/input';
-const $Schema: typeof _Schema = (_Schema as any).default ?? _Schema;
+import { z } from 'zod';
 import { checkRead, checkMutate } from '@/helpers/helper';
 import type { Prisma } from '@prisma/client';
 import type { UseTRPCMutationOptions, UseTRPCMutationResult, UseTRPCQueryOptions, UseTRPCQueryResult, UseTRPCInfiniteQueryOptions, UseTRPCInfiniteQueryResult } from '@trpc/react-query/shared';
 import type { TRPCClientErrorLike } from '@trpc/client';
 import type { AnyRouter } from '@trpc/server';
 
+import { z } from 'zod';
+
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
+    const AccountInputSchema = z.object({
+        // Define your Account schema here
+        // For example:
+        // id: z.string().optional(),
+        // email: z.string().email(),
+        // name: z.string(),
+        // ... other fields
+    });
+
     return router({
+        createMany: procedure.input(z.array(AccountInputSchema)).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.createMany({ data: input }))),
 
-        createMany: procedure.input($Schema.AccountInputSchema.createMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.createMany(input as any))),
+        create: procedure.input(AccountInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.create({ data: input }))),
 
-        create: procedure.input($Schema.AccountInputSchema.create).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.create(input as any))),
+        deleteMany: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.deleteMany(input))),
 
-        deleteMany: procedure.input($Schema.AccountInputSchema.deleteMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.deleteMany(input as any))),
+        delete: procedure.input(z.object({ where: z.object({ id: z.string() }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.delete(input))),
 
-        delete: procedure.input($Schema.AccountInputSchema.delete).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.delete(input as any))),
+        findFirst: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).account.findFirst(input))),
 
-        findFirst: procedure.input($Schema.AccountInputSchema.findFirst).query(({ ctx, input }) => checkRead(db(ctx).account.findFirst(input as any))),
+        findMany: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).account.findMany(input))),
 
-        findMany: procedure.input($Schema.AccountInputSchema.findMany).query(({ ctx, input }) => checkRead(db(ctx).account.findMany(input as any))),
+        findUnique: procedure.input(z.object({ where: z.object({ id: z.string() }), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).account.findUnique(input))),
 
-        findUnique: procedure.input($Schema.AccountInputSchema.findUnique).query(({ ctx, input }) => checkRead(db(ctx).account.findUnique(input as any))),
+        updateMany: procedure.input(z.object({ where: z.any(), data: AccountInputSchema.partial() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.updateMany(input))),
 
-        updateMany: procedure.input($Schema.AccountInputSchema.updateMany).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.updateMany(input as any))),
-
-        update: procedure.input($Schema.AccountInputSchema.update).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.update(input as any))),
-
-    }
-    );
+        update: procedure.input(z.object({ where: z.object({ id: z.string() }), data: AccountInputSchema.partial() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).account.update(input))),
+    });
 }
 
 export interface ClientType<AppRouter extends AnyRouter, Context = AppRouter['_def']['_config']['$types']['ctx']> {

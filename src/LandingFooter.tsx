@@ -1,6 +1,7 @@
 import { LinkedinFilled, TwitterCircleFilled } from '@ant-design/icons'
 import Link from 'next/link'
 import { HTMLAttributes } from 'react'
+import { Logo } from '@/components/Logo'
 
 interface Props extends HTMLAttributes<HTMLElement> {}
 

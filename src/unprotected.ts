@@ -1,4 +1,4 @@
-import { Configuration } from '@/core/configuration'
+import { Configuration } from '../core/configuration'
 import { PrismaClient } from '@prisma/client'
 
 const createPrismaClient = () => {
