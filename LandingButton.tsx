@@ -1,12 +1,13 @@
-import { AnchorHTMLAttributes } from 'react'
+import { HTMLAttributes } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-export interface IButton extends AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface IButton extends HTMLAttributes<HTMLAnchorElement> {
   href: string
   size?: 'sm' | 'md' | 'lg'
   block?: boolean
   type?: 'outline' | 'primary' | 'inverted' | 'muted'
   children?: React.ReactNode
+  className?: string
 }
 
 const LandingButton = (props: IButton) => {
