@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from '../../helpers/utility'
 import LandingButton from './LandingButton'
 
 interface Props extends HTMLAttributes<HTMLElement> {
@@ -7,6 +7,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   subtitle?: string
   buttonText?: string
   buttonLink?: string
+  className?: string
 }
 
 export const LandingCTA: React.FC<Props> = ({

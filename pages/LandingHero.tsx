@@ -1,5 +1,5 @@
-import { HTMLAttributes, ReactNode } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { HTMLAttributes } from 'react'
+import { DesignSystemUtility } from '../../helpers/utility'
 import LandingButton from './LandingButton'
 
 interface Props extends HTMLAttributes<HTMLElement> {
@@ -8,7 +8,8 @@ interface Props extends HTMLAttributes<HTMLElement> {
   buttonText: string
   buttonLink: string
   pictureUrl?: string
-  socialProof?: ReactNode
+  socialProof?: React.ReactNode
+  className?: string
 }
 
 export const LandingHero: React.FC<Props> = ({

@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from '../../helpers/utility'
 
 type Testimonial = {
   name: string
@@ -13,6 +13,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle: string
   testimonials: Testimonial[]
+  className?: string
 }
 
 export const LandingTestimonials: React.FC<Props> = ({

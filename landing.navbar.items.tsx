@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ReactNode } from 'react'
-import { DesignSystemUtility } from '../../helpers/utility'
+import { DesignSystemUtility } from './utility'
 
 type Props = {
   href: string

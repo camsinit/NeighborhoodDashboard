@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from '../../helpers/utility'
 
 type StepType = {
   heading: string
@@ -10,6 +10,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle?: string
   steps: StepType[]
+  className?: string
 }
 
 export const LandingHowItWorks: React.FC<Props> = ({

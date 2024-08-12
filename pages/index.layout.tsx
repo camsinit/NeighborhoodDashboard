@@ -3,8 +3,8 @@ import { Avatar, Dropdown, Flex, Layout, Menu, Tag } from 'antd'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 
-import { useUserContext } from '@/core/context'
-import { Utility } from '@/core/helpers/utility'
+import { useUserContext } from '../../core/context'
+import { Utility } from '../../core/helpers/utility'
 
 const { Header } = Layout
 

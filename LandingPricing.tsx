@@ -1,6 +1,6 @@
 import { CheckCircleFilled } from '@ant-design/icons'
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from './utility'
 import LandingButton from './LandingButton'
 
 type Package = {
@@ -17,6 +17,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle: string
   packages: Package[]
+  className?: string
 }
 
 export const LandingPricing: React.FC<Props> = ({

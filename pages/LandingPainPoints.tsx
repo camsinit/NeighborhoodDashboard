@@ -1,6 +1,6 @@
 import { ArrowDownOutlined } from '@ant-design/icons'
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from '../../helpers/utility'
 import RightArrow from './images/rightArrow.svg'
 
 type PainPointType = {
@@ -12,6 +12,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title?: string
   subtitle?: string
   painPoints: PainPointType[]
+  className?: string
 }
 
 export const LandingPainPoints: React.FC<Props> = ({

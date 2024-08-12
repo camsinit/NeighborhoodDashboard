@@ -1,11 +1,12 @@
 import { ArrowRightOutlined } from '@ant-design/icons'
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from '../../helpers/utility'
 
 interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle: string
   questionAnswers: { question: string; answer: string }[]
+  className?: string
 }
 
 export const LandingFAQ: React.FC<Props> = ({
