@@ -33,7 +33,7 @@ export default function createRouter<Config extends BaseConfig>(router: RouterFa
 
         deleteMany: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.deleteMany(input))),
 
-        delete: procedure.input(z.object({ where: z.any() })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.delete(input))),
+        delete: procedure.input(z.object({ where: z.object({ id: z.string() }) })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).event.delete(input))),
 
         findFirst: procedure.input(z.object({ where: z.any(), select: z.any().optional(), include: z.any().optional() })).query(({ ctx, input }) => checkRead(db(ctx).event.findFirst(input))),
 
