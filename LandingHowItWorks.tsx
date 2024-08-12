@@ -10,6 +10,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   title: string
   subtitle?: string
   steps: StepType[]
+  className?: string
 }
 
 export const LandingHowItWorks: React.FC<Props> = ({
