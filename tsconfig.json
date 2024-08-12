@@ -16,8 +16,9 @@
       "ES2022"
     ],
     "noEmit": true,
-    "module": "esnext",
-    "jsx": "preserve",
+    "module": "CommonJS",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "plugins": [
       {
         "name": "next"
@@ -43,7 +44,8 @@
       "react"
     ],
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "useDefineForClassFields": true
   },
   "include": [
     "next-env.d.ts",
