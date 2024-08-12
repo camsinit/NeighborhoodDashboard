@@ -1,4 +1,3 @@
-import { Logo } from '@/designSystem/layouts/NavigationLayout/components/Logo'
 import { LinkedinFilled, TwitterCircleFilled } from '@ant-design/icons'
 import Link from 'next/link'
 import { HTMLAttributes } from 'react'
@@ -24,7 +23,7 @@ export const LandingFooter: React.FC<Props> = ({ ...props }) => {
         <div className="max-w-7xl mx-auto  flex sm:flex-row flex-col justify-between items-start ">
           <div>
             <div className="mr-4  md:flex mb-4">
-              <Logo height={50} isLabel />
+              {/* Logo component removed */}
             </div>
             <div>Copyright &copy; 2024</div>
             <div className="mt-2">All rights reserved</div>
