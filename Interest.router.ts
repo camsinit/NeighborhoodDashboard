@@ -9,7 +9,7 @@ import type { AnyRouter } from '@trpc/server';
 const InterestInputSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1),
-  description: z.string().optional(),
+  description: z.string(),
   createdById: z.string().optional(),
   dateCreated: z.date().optional(),
   dateUpdated: z.date().optional(),
@@ -18,12 +18,9 @@ const InterestInputSchema = z.object({
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
     return router({
         createMany: procedure.input(z.object({
-            data: z.array(z.object({
-                name: z.string().min(1),
-                description: z.string().optional(),
-                createdById: z.string().optional(),
-            }))
-        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.createMany({ data: input.data }))),
+            data: z.array(InterestInputSchema.omit({ id: true, dateCreated: true, dateUpdated: true })),
+            skipDuplicates: z.boolean().optional()
+        })).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.createMany(input))),
 
         create: procedure.input(InterestInputSchema).mutation(async ({ ctx, input }) => checkMutate(db(ctx).interest.create({ data: input }))),
 
