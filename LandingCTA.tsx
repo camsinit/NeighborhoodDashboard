@@ -1,5 +1,5 @@
 import { HTMLAttributes } from 'react'
-import { DesignSystemUtility } from '../helpers/utility'
+import { DesignSystemUtility } from './utility'
 import LandingButton from './LandingButton'
 
 interface Props extends HTMLAttributes<HTMLElement> {
