@@ -2,13 +2,13 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
-import { useEffect } from 'react'
+import React from 'react'
 
 export default function PostHogPageView(): null {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const posthog = usePostHog()
-  useEffect(() => {
+  React.useEffect(() => {
     // Track pageviews
     if (pathname && posthog) {
       let url = window.origin + pathname
