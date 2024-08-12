@@ -8,13 +8,13 @@ import type { AnyRouter } from '@trpc/server';
 
 const EventInputSchema = z.object({
   id: z.string().optional(),
-  name: z.string(),
+  name: z.string().min(1),
   description: z.string().optional(),
   date: z.string().optional(),
   location: z.string().optional(),
   createdById: z.string().optional(),
-  dateCreated: z.date(),
-  dateUpdated: z.date(),
+  dateCreated: z.date().optional().default(() => new Date()),
+  dateUpdated: z.date().optional().default(() => new Date()),
 });
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
