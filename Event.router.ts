@@ -13,6 +13,8 @@ const EventInputSchema = z.object({
   date: z.string().optional(),
   location: z.string().optional(),
   createdById: z.string().optional(),
+  dateCreated: z.date(),
+  dateUpdated: z.date(),
 });
 
 export default function createRouter<Config extends BaseConfig>(router: RouterFactory<Config>, procedure: ProcBuilder<Config>) {
