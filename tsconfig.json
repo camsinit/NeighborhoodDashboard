@@ -30,6 +30,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/core/*": [
+        "./src/core/*"
       ]
     },
     "moduleResolution": "node",

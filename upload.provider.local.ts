@@ -1,5 +1,5 @@
-import { Configuration } from '@/core/configuration'
-import { FileHelper } from '@/core/helpers/file'
+import { Configuration } from '../core/configuration'
+import { FileHelper } from '../core/helpers/file'
 import {
   FromPrivateToPublicUrlOptions,
   UploadPrivateOptions,
@@ -7,28 +7,30 @@ import {
   UploadProvider,
   UploadPublicOptions,
   UploadPublicReturn,
-} from '../../../upload.provider'
+} from './upload.provider'
 
 export class UploadProviderLocal extends UploadProvider {
-  private staticServerUrl: string
+  private staticServerUrl: string;
+
+  constructor() {
+    super();
+    this.staticServerUrl = '';
+  }
 
   private pathPublicInternal = `./public/upload/public`
   private pathPrivateInternal = `./public/upload/private`
   private pathPublicExternal = `/upload/public`
   private pathPrivateExternal = `/upload/private`
 
-  public initialise(): Promise<void> {
+  public async initialise(): Promise<void> {
     try {
-      FileHelper.writeFolder(this.pathPublicInternal)
-
-      this.staticServerUrl = `${Configuration.getBaseUrl()}`
-
-      console.log(`Upload Local is active`)
+      await FileHelper.writeFolder(this.pathPublicInternal);
+      this.staticServerUrl = `${Configuration.getBaseUrl()}`;
+      console.log(`Upload Local is active`);
     } catch (error) {
-      console.error(`Upload Local failed to start: ${error.message}`)
+      console.error(`Upload Local failed to start: ${error instanceof Error ? error.message : String(error)}`);
+      throw error; // Re-throw the error to indicate initialization failure
     }
-
-    return
   }
 
   async uploadPublic({

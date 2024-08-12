@@ -32,8 +32,9 @@ export abstract class UploadProvider {
     options: FromPrivateToPublicUrlOptions,
   ): Promise<FromPrivateToPublicUrlReturn>
 
-  public initialise(): Promise<void> {
-    return
+  public async initialise(): Promise<void> {
+    // Implement initialization logic here if needed
+    return Promise.resolve();
   }
 
   protected ensureFilename(filenameBefore: string): string {

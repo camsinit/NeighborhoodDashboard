@@ -1,5 +1,5 @@
-import { DateHelper } from '@/core/helpers/date'
-import { Utility } from '@/core/helpers/utility'
+import { DateHelper } from '../../core/helpers/date'
+import { Utility } from '../../core/helpers/utility'
 import {
   GetObjectCommand,
   ListBucketsCommand,
@@ -15,7 +15,7 @@ import {
   UploadProvider,
   UploadPublicOptions,
   UploadPublicReturn,
-} from '../../../upload.provider'
+} from '../upload.provider'
 
 const ONE_HOUR_IN_SECONDS = 60 * 60
 
@@ -54,6 +54,28 @@ export class UploadProviderAws extends UploadProvider {
 
   private httpClient = axios.create()
 
+  constructor() {
+    super()
+    this.client = new S3Client({})
+    this.bucketNamePublic = ''
+    this.bucketNamePrivate = ''
+    this.region = ''
+    this.credentials = {
+      accessKeyId: '',
+      secretAccessKey: '',
+      sessionToken: '',
+      expiration: new Date()
+    }
+    this.marblismApiKey = ''
+    this.bucketKey = ''
+    this.httpClientOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    }
+  }
+
   private httpClientOptions: AxiosRequestConfig<any> = {
     headers: {
       'Content-Type': 'application/json',
@@ -61,70 +83,69 @@ export class UploadProviderAws extends UploadProvider {
     },
   }
 
-  public async initialise() {
-    this.region = process.env.SERVER_UPLOAD_AWS_REGION
+  public async initialise(): Promise<void> {
+    this.region = process.env.SERVER_UPLOAD_AWS_REGION as string;
 
     if (Utility.isNull(this.region)) {
-      this.region = 'us-west-1'
+      this.region = 'us-west-1';
     }
 
     try {
-      this.marblismApiKey = process.env.SERVER_UPLOAD_MARBLISM_API_KEY
+      this.marblismApiKey = process.env.SERVER_UPLOAD_MARBLISM_API_KEY as string;
 
       if (Utility.isDefined(this.marblismApiKey)) {
         if (UploadProviderAws.isMarblismInitialised) {
-          return
+          return;
         }
 
-        await this.initializeWithMarblism()
+        await this.initializeWithMarblism();
 
-        console.log(`AWS library (Marblism) active in region ${this.region}`)
+        console.log(`AWS library (Marblism) active in region ${this.region}`);
 
-        UploadProviderAws.isMarblismInitialised = true
+        UploadProviderAws.isMarblismInitialised = true;
 
-        return
+        return;
       }
     } catch (error) {
-      console.warn(`AWS library (Marblism) failed to start: ${error.message}`)
+      console.warn(`AWS library (Marblism) failed to start: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     try {
-      const accessKey = process.env.SERVER_UPLOAD_AWS_ACCESS_KEY
-
-      const secretKey = process.env.SERVER_UPLOAD_AWS_SECRET_KEY
+      const accessKey = process.env.SERVER_UPLOAD_AWS_ACCESS_KEY;
+      const secretKey = process.env.SERVER_UPLOAD_AWS_SECRET_KEY;
 
       if (!accessKey && !secretKey) {
         throw new Error(
           'Set SERVER_UPLOAD_AWS_ACCESS_KEY && SERVER_UPLOAD_AWS_SECRET_KEY in your .env to activate',
-        )
+        );
       }
 
       if (!accessKey) {
         throw new Error(
           'Set SERVER_UPLOAD_AWS_ACCESS_KEY in your .env to activate',
-        )
+        );
       }
 
       if (!secretKey) {
         throw new Error(
           'Set SERVER_UPLOAD_AWS_SECRET_KEY in your .env to activate',
-        )
+        );
       }
 
-      this.bucketNamePublic = process.env.SERVER_UPLOAD_AWS_BUCKET_PUBLIC_NAME
+      this.bucketNamePublic = process.env.SERVER_UPLOAD_AWS_BUCKET_PUBLIC_NAME as string;
 
       if (!this.bucketNamePublic) {
         console.warn(
           `Set SERVER_UPLOAD_AWS_BUCKET_PUBLIC_NAME in your .env to activate a public bucket with infinite urls`,
-        )
+        );
       }
 
-      this.bucketNamePrivate = process.env.SERVER_UPLOAD_AWS_BUCKET_PRIVATE_NAME
+      this.bucketNamePrivate = process.env.SERVER_UPLOAD_AWS_BUCKET_PRIVATE_NAME as string;
 
       if (!this.bucketNamePrivate) {
         console.warn(
           `Set SERVER_UPLOAD_AWS_BUCKET_PRIVATE_NAME in your .env to activate a private bucket with signed urls`,
-        )
+        );
       }
 
       this.client = new S3Client({
@@ -133,15 +154,14 @@ export class UploadProviderAws extends UploadProvider {
           accessKeyId: accessKey,
           secretAccessKey: secretKey,
         },
-      })
+      });
 
-      await this.check()
+      await this.check();
 
-      console.log(`AWS library active in region ${this.region}`)
+      console.log(`AWS library active in region ${this.region}`);
     } catch (error) {
-      console.warn(`AWS library failed to start`)
-
-      throw new Error(error)
+      console.warn(`AWS library failed to start`);
+      throw new Error(error instanceof Error ? error.message : String(error));
     }
   }
 
@@ -252,6 +272,12 @@ export class UploadProviderAws extends UploadProvider {
     }
   }
 
+  protected ensureFilename(filename: string): string {
+    const cleanFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '');
+    const timestamp = Date.now();
+    return `${timestamp}-${cleanFilename}`;
+  }
+
   public async uploadPublic(
     options: UploadPublicOptions,
   ): Promise<UploadPublicReturn> {
@@ -285,32 +311,32 @@ export class UploadProviderAws extends UploadProvider {
   }
 
   public async uploadPrivate(
-    options: UploadPrivateOptions,
+    options: UploadPrivateOptions
   ): Promise<UploadPrivateReturn> {
-    await this.ensureCredentials()
+    await this.ensureCredentials();
 
-    const { file } = options
+    const { file } = options;
 
-    const key = this.ensureFilename(file.name)
+    const key = this.ensureFilename(file.name);
 
     const command = new PutObjectCommand({
-      Bucket: `${this.bucketNamePrivate}`,
+      Bucket: this.bucketNamePrivate,
       Key: this.ensureKey(key),
       Body: file.buffer,
       ContentType: file.mimetype,
-    })
+    });
 
     try {
-      await this.client.send(command)
+      await this.client.send(command);
 
-      console.log(`File ${file.name} saved (private)`)
+      console.log(`File ${file.name} saved (private)`);
 
-      const url = `${this.getBaseUrlPrivate()}/${key}`
+      const url = `${this.getBaseUrlPrivate()}/${key}`;
 
-      return { url }
+      return { url };
     } catch (error) {
-      console.error(`${error}`)
-      throw new Error(`Could not upload private file with key "${key}"`)
+      console.error(`${error}`);
+      throw new Error(`Could not upload private file with key "${key}"`);
     }
   }
 
@@ -347,12 +373,12 @@ export class UploadProviderAws extends UploadProvider {
   private async listBuckets(): Promise<Bucket[]> {
     const result = await this.client.send(new ListBucketsCommand({}))
 
-    const buckets = result.Buckets.map(item => ({
-      name: item.Name,
-      dateCreation: item.CreationDate,
-    }))
+    const buckets = result.Buckets?.map(item => ({
+      name: item.Name ?? '',
+      dateCreation: item.CreationDate ?? new Date(),
+    })) ?? [];
 
-    return buckets
+    return buckets as Bucket[];
   }
 
   private getBaseUrlPrivate(): string {
@@ -396,8 +422,12 @@ export class UploadProviderAws extends UploadProvider {
   }
 
   private setApiKey(apiKey: string) {
-    this.httpClientOptions.headers['Authorization'] = apiKey
-    this.httpClientOptions['credentials'] = 'include'
+    if (this.httpClientOptions.headers) {
+      this.httpClientOptions.headers['Authorization'] = apiKey;
+    } else {
+      this.httpClientOptions.headers = { 'Authorization': apiKey };
+    }
+    this.httpClientOptions.withCredentials = true;
   }
 
   private async postMarblism<ReturnType>(url: string) {

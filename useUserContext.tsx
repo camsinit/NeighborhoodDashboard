@@ -1,13 +1,13 @@
 import { Role, User } from '@prisma/client'
 import { useSession } from 'next-auth/react'
-import {
+import React, {
   ReactNode,
   createContext,
   useContext,
   useEffect,
   useState,
 } from 'react'
-import { Api } from '../../trpc'
+import { Api } from '../trpc'
 
 /**
  * @provider useUserContext
@@ -31,12 +31,19 @@ interface UserContextType {
   isLoading: boolean
 }
 
-const UserContext = createContext<UserContextType>(undefined)
+const UserContext = createContext<UserContextType>({
+  user: null,
+  checkRole: () => false,
+  refetch: () => {},
+  authenticationStatus: 'unauthenticated',
+  isLoggedIn: false,
+  isLoading: false
+});
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { data, status } = useSession()
 
-  const [user, setUser] = useState<UserWithRoles>(null)
+  const [user, setUser] = useState<UserWithRoles | null>(null)
 
   const isLoggedIn = status === 'authenticated'
 
@@ -47,14 +54,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     },
     {
       enabled: false,
-      onSuccess: user => {
+      onSuccess: (user: UserWithRoles) => {
         setUser(user)
       },
     },
   )
 
   const checkRole = (roleName: string) => {
-    return !!user?.roles?.find(role => role.name === roleName)
+    return !!user?.roles?.find((role: Role) => role.name === roleName)
   }
 
   const isLoading =
